@@ -1,28 +1,28 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
-const logger = require('morgan');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 const path = require('path');
 
 const config = require('./config/database');
-const routes = require('./routes');
+const api = require('./routes/api');
 const app = express();
 const port = 3000;
 
+app.use(cors({ origin: 'http://localhost:4200'}));
 mongoose.connect(config.uri, { useNewUrlParser: true }, (err) => {
-  if (err) {
-    console.log(err);
+  if(err) {
+    console.log('Error connecting to database', err);
   } else {
-    console.log('connceted to database ' + config.db + ' at:' + config.uri)
+    console.log(`Database ${config.db}, is connected and is running at ${config.uri}`)
   }
 });
 
-app.use(express.static(path.join(__dirname, 'dist')));
-app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use('/api', routes)
+app.use('/api', api)
 
 app.listen(port);
   console.log(`App is running at http://localhost:${port}`);
